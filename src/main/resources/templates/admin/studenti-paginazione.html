@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Lista Studenti</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<h1>Operazioni Studente</h1>
+
+<div class="top-bar">
+
+    <form th:action="@{/studente/cerca}" method="get">
+        <input type="text" name="keyword" placeholder="Cerca per nome o cognome">
+        <button type="submit">Cerca</button>
+    </form>
+
+    <form th:action="@{/studente/nuovo}" method="get">
+        <button type="submit">Inserisci</button>
+    </form>
+
+</div>
+
+
+<p th:if="${studentiPaginazione.content == null or #lists.isEmpty(studentiPaginazione.content)}">
+	 Nessun studente disponibile </p>
+	
+<table>
+	<thead>
+	<tr>
+	    <th>Numero</th>
+	    <th>Nome</th>
+	    <th>Cognome</th>
+		<th>Codice fiscale</th>
+	    <th>Data di nascita</th>
+	    <th class="actions-cell">Operazioni</th>
+	</tr>
+	</thead>
+
+<tbody>
+<!-- PAGINAZIONE STANDARD -->
+<tr th:each="stud, st : ${studentiPaginazione?.content}"
+    th:if="${risultati == null or #lists.isEmpty(risultati)}"
+    th:attr="data-id=${stud.id}">
+
+    <td th:text="${studentiPaginazione.number * studentiPaginazione.size + st.count}"></td>
+	<td th:text="${stud.nome}"></td>
+	<td th:text="${stud.cognome}"></td>
+	<td th:text="${stud.codiceFiscale}"></td>
+	<td th:text="${stud.dataNascita}"></td>
+
+
+    <td class="actions-cell">
+        <div class="actions">
+            <button type="button" th:onclick="|editRow(this, ${stud.id})|">Modifica</button>
+            <button type="button" th:onclick="|confirmDelete(${stud.id})|">Elimina</button>
+			<button type="button" th:attr="data-id=${stud.id}, data-nome=${stud.nome}, data-cognome=${stud.cognome}"
+											        th:onclick="confirmAccount(this)">
+											    Genera Account
+											</button>
+
+            <!-- DETTAGLI CON FUMETTO -->
+            <button type="button"
+                    th:attr="data-matricola=${stud.matricola}, data-nome=${stud.nome}, data-cognome=${stud.cognome}"
+                    onclick="openTooltip(this)">
+                Dettagli
+            </button>
+
+        </div>
+    </td>
+</tr>
+
+<!-- RISULTATI RICERCA -->
+<tr th:each="stud, st : ${risultati}"
+    th:if="${risultati != null and !#lists.isEmpty(risultati)}"
+    th:attr="data-id=${stud.id}">
+
+    <td th:text="${st.count}"></td>
+    <td th:text="${stud.nome}"></td>
+    <td th:text="${stud.cognome}"></td>
+	<td th:text="${stud.codiceFiscale}"></td>
+	<td th:text="${stud.dataNascita}"></td>
+
+    <td class="actions-cell">
+        <div class="actions">
+            <button type="button" th:onclick="|editRow(this, ${stud.id})|">Modifica</button>
+            <button type="button" th:onclick="|confirmDelete(${stud.id})|">Elimina</button>
+			<button type="button" th:attr="data-id=${stud.id}, data-nome=${stud.nome}, data-cognome=${stud.cognome}"
+											        th:onclick="confirmAccount(this)">
+											    Genera Account
+											</button>
+
+            <!-- Dettagli per i risultati -->
+            <button type="button"
+                    th:attr="data-matricola=${stud.matricola}, data-nome=${stud.nome}, data-cognome=${stud.cognome}"
+                    onclick="openTooltip(this)">
+                Dettagli
+            </button>
+
+        </div>
+    </td>
+
+</tr>
+
+</tbody>
+</table>
+
+<!-- BOTTONI PAGINAZIONE -->
+<div class="pagination"
+     th:if="${risultati == null or #lists.isEmpty(risultati)}">
+
+    <button th:disabled="${studentiPaginazione?.first}"
+            th:onclick="|location.href='@{/studente(pagina=0,dimensione=${studentiPaginazione?.size})}'|">Prima</button>
+
+    <button th:disabled="${!(studentiPaginazione?.hasPrevious())}"
+            th:onclick="|location.href='@{/studente(pagina=${studentiPaginazione?.number - 1},dimensione=${studentiPaginazione?.size})}'|">&lt; Indietro</button>
+
+    <span>
+        Pagina <span th:text="${studentiPaginazione?.number + 1}"></span>
+        di <span th:text="${studentiPaginazione?.totalPages}"></span>
+    </span>
+
+    <button th:disabled="${!(studentiPaginazione?.hasNext())}"
+            th:onclick="|location.href='@{/studente(pagina=${studentiPaginazione?.number + 1},dimensione=${studentiPaginazione?.size})}'|">Avanti ></button>
+
+    <button th:disabled="${studentiPaginazione?.last}"
+            th:onclick="|location.href='@{/studente(pagina=${studentiPaginazione?.totalPages - 1},dimensione=${studentiPaginazione?.size})}'|">Ultima</button>
+
+</div>
+
+
+
+<button class="home-btn" th:onclick="|location.href='@{/admin/home}'|">Torna alla Home</button>
+
+<div th:if="${risultati != null and !#lists.isEmpty(risultati)}" style="margin-top: 15px;">
+    <form th:action="@{/studente}" method="get">
+        <button class="home-btn" type="submit">Torna alla paginazione</button>
+    </form>
+</div>
+
+<script>
+
+function editRow(button, id) {
+    const row = button.closest('tr');
+
+    if (button.textContent === "Salva") {
+        const nome = row.querySelector('td:nth-child(2) input').value;
+        const cognome = row.querySelector('td:nth-child(3) input').value;
+		const codiceFiscale = row.querySelector('td:nth-child(4) input').value;
+		const dataNascita = row.querySelector('td:nth-child(5) input').value;
+
+        if (!confirm(`Confermi la modifica?\n\nNome: ${nome}\nCognome: ${cognome}`)) return;
+		
+		fetch(`/studente/modifica/${id}`, {
+			method: "PUT",
+			            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			            body: new URLSearchParams({
+			                nome,
+			                cognome,
+							codiceFiscale,
+			                dataNascita
+			            })
+			        }).then(() => location.reload());
+
+        return;
+    }
+
+    const nomeCell = row.cells[1];
+    const cognomeCell = row.cells[2];
+	const codiceFiscaleCell= row.cells[3];
+	const dataNascitaCell = row.cells[4];
+
+    nomeCell.innerHTML = `<input type="text" value="${nomeCell.textContent}">`;
+    cognomeCell.innerHTML = `<input type="text" value="${cognomeCell.textContent}">`;
+	codiceFiscaleCell.innerHTML =`<input type="text" value="${codiceFiscaleCell.textContent}">`;
+	dataNascitaCell.innerHTML =`<input type="date" value="${dataNascitaCell.textContent}">`;
+
+    button.textContent = "Salva";
+}
+function confirmAccount(button) {
+    const id = button.dataset.id;
+    const nome = button.dataset.nome;
+    const cognome = button.dataset.cognome;
+
+    if (!confirm(`Generare account per: ${nome} ${cognome}?`)) {
+        return;
+    }
+
+    // fetch POST AJAX 
+    fetch(`/studente/account/${id}`, {
+        method: "POST"
+    })
+    .then(r => r.json())
+    .then(data => {
+        alert(`ACCOUNT CREATO!\n\nUsername: ${data.username}\nPassword: ${data.password}`);
+        location.reload();
+    })
+    .catch(() => alert("Errore durante la creazione dell'account"));
+}
+function confirmDelete(id) {
+    if (confirm("Sei sicuro di voler eliminare questo studente?")) {
+    	alert("Studente cancellato!");
+        location.href = `/studente/elimina/${id}`;
+    }
+}
+
+/* --- FUMETTO DETTAGLI --- */
+let currentTooltip = null;
+
+function openTooltip(button) {
+
+    if (currentTooltip) {
+        currentTooltip.remove();
+        currentTooltip = null;
+    }
+
+    const tooltip = document.createElement("div");
+    tooltip.className = "tooltip-box";
+
+    tooltip.innerHTML = `
+        <strong>${button.dataset.nome} ${button.dataset.cognome}</strong><br>
+        Matricola: ${button.dataset.matricola}
+    `;
+
+    document.body.appendChild(tooltip);
+
+    const rect = button.getBoundingClientRect();
+
+    tooltip.style.top = (window.scrollY + rect.top - tooltip.offsetHeight - 12) + "px";
+    tooltip.style.left = (window.scrollX + rect.left) + "px";
+
+    setTimeout(() => tooltip.classList.add("show"), 10);
+
+    currentTooltip = tooltip;
+
+    document.addEventListener("click", function closeTooltip(e) {
+        if (!tooltip.contains(e.target) && e.target !== button) {
+            tooltip.remove();
+            currentTooltip = null;
+            document.removeEventListener("click", closeTooltip);
+        }
+    });
+}
+
+</script>
+
+</body>
+</html>
+

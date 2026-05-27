@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Registri</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .registro-btn {
+            width: 260px;
+            padding: 14px;
+            margin: 10px 0;
+            background: #4a74f5;
+            color: white;
+            border: none;
+            font-size: 17px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .registro-btn:hover {
+            background: #3b5ed1;
+        }
+		header {
+		       display: flex;
+		       justify-content: flex-end;
+		       padding: 10px;
+		       background-color: #f0f0f0;
+		   }
+
+		   header button {
+		       padding: 5px 10px;
+		       background-color: #ff4a4a;
+		       color: white;
+		       border: none;
+		       border-radius: 4px;
+		       cursor: pointer;
+		   }
+
+		   header button:hover {
+		       background-color: #d13b3b;
+		   }
+    </style>
+</head>
+
+<body>
+	<header>
+	    <form th:action="@{/account/logout}" method="get">
+	        <button type="submit">Logout</button>
+	    </form>
+	</header>
+
+<h1>Registri Disponibili</h1>
+
+<!--  cicla i registri -->
+<div th:each="reg : ${registri}">
+    <a th:href="@{/registroProf/mostraRegistro/{id}(id=${reg.nomeClasse})}">
+        <button class="registro-btn" th:text="${reg.nomeClasse}"></button>
+    </a>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

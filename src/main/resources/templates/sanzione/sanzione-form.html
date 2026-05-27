@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sanzione</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            /* --- Nuovo sfondo coerente --- */
+            background: linear-gradient(135deg, #cfd3df, #e9ecf3);
+
+            /* Pattern delicato */
+            background-image:
+                radial-gradient(circle at 1px 1px, rgba(255,255,255,0.5) 1px, transparent 0);
+            background-size: 20px 20px;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* --- SCHEDA CARD --- */
+        .card {
+            width: 80%;
+            max-width: 600px;
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+
+        .info-section {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .info-section p {
+            margin: 8px 0;
+            color: #555;
+            font-size: 16px;
+        }
+
+        .info-section p strong {
+            color: #333;
+        }
+
+        /* --- FORM STYLE --- */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            color: #333;
+            margin-top: 15px;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        select {
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+
+        /* Stile specifico per la select multipla */
+        select[multiple] {
+            height: 120px;
+            padding: 8px;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        select:focus {
+            border-color: #4a74f5;
+            outline: none;
+            box-shadow: 0 0 5px rgba(74, 116, 245, 0.3);
+        }
+
+        /* --- BOTTONE --- */
+        .submit-btn {
+            background: #4a74f5;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            margin-top: 25px;
+            transition: 0.3s;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background: #3b5ed1;
+        }
+
+        /* --- BACK LINK --- */
+        .back-btn {
+            margin-top: 20px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            background: #e6e9f3;
+            color: #333;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.3s;
+            text-align: center;
+            display: inline-block;
+            width: 80%;
+            max-width: 600px;
+            box-sizing: border-box;
+        }
+
+        .back-btn:hover {
+            background: #d4d9e8;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Aggiungi Sanzione</h2>
+
+    <div class="card">
+        <div class="info-section">
+            <p><strong>Classe coinvolta:</strong> <span th:text="${classe}"></span></p>
+        </div>
+
+        <form th:action="@{/sanzione/prof/nuovaSanzione}" th:object="${sanzione}" method="post">
+            
+            <label for="descrizione">Descrizione sanzione</label>
+            <input type="text" th:field="*{descrizione}" id="descrizione" placeholder="Es. Condotta non regolamentare..." required />
+
+            <label for="tipo">Tipo sanzione</label>
+            <input type="text" th:field="*{tipo}" id="tipo" placeholder="Es. Nota disciplinare" required />
+
+            <label for="studenti">Seleziona studenti coinvolti (Usa Ctrl/Cmd per selezione multipla)</label>
+            <select th:field="*{studenti}" id="studenti" multiple required>
+                <option th:each="stu : ${listaStudenti}"
+                        th:value="${stu.id}"
+                        th:text="${stu.nome} + ' ' + ${stu.cognome}">
+                </option>
+            </select>
+
+            <label for="data">Data</label>
+            <input type="date" th:field="*{data}" id="data" required />
+            
+            <input type="hidden" name="nomeClasse" th:value="${classe}" />
+            
+            <button type="submit" class="submit-btn">Invia</button>
+        </form>
+    </div>
+
+    <a href="javascript:history.back()" class="back-btn">Torna indietro</a>
+
+</body>
+</html>
+						
+						

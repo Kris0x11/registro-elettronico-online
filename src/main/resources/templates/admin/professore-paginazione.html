@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Lista Professori</title>
+
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-4">
+
+    <h1 class="text-center mb-4">Operazioni Professore</h1>
+
+    <!-- TOP BAR -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <form th:action="@{/professore/cerca}" method="get" class="d-flex gap-2">
+            <input type="text" name="keyword" class="form-control"
+                   placeholder="Cerca per nome o cognome">
+            <button class="btn btn-primary" type="submit">Cerca</button>
+        </form>
+
+        <form th:action="@{/professore/nuovo}" method="get">
+            <button class="btn btn-success" type="submit">Inserisci</button>
+        </form>
+
+    </div>
+
+    <!-- TABELLA -->
+    <table class="table table-striped table-hover align-middle shadow-sm">
+        <thead class="table-secondary">
+        <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Cognome</th>
+            <th>Codice Fiscale</th>
+            <th>Data Nascita</th>
+            <th class="text-center">Azioni</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <!-- PAGINAZIONE -->
+        <tr th:each="prof, st : ${professoriPaginazione?.content}"
+            th:if="${risultati == null or #lists.isEmpty(risultati)}">
+
+            <td th:text="${professoriPaginazione.number * professoriPaginazione.size + st.count}"></td>
+            <td th:text="${prof.nome}"></td>
+            <td th:text="${prof.cognome}"></td>
+            <td th:text="${prof.codiceFiscale}"></td>
+            <td th:text="${prof.dataNascita}"></td>
+
+            <td class="text-center">
+                <div class="btn-group btn-group-sm">
+
+                    <button class="btn btn-warning modifica-btn"
+                            th:onclick="|editRow(this, ${prof.id})|">Modifica</button>
+
+                    <button class="btn btn-secondary annulla-btn d-none"
+                            onclick="cancelEdit(this)">Annulla</button>
+
+                    <button class="btn btn-success salva-btn d-none"
+                            th:onclick="|editRow(this, ${prof.id})|">Salva</button>
+
+                    <button class="btn btn-danger"
+                            th:onclick="|confirmDelete(${prof.id})|">Elimina</button>
+
+                    <button class="btn btn-info text-white"
+                            th:attr="data-id=${prof.id}, data-nome=${prof.nome}, data-cognome=${prof.cognome}"
+                            onclick="confirmAccount(this)">
+                        Account
+                    </button>
+
+                    <button class="btn btn-outline-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#dettagliModal"
+                            th:attr="
+                                data-nome=${prof.nome},
+                                data-cognome=${prof.cognome},
+                                data-materia=${prof.materia},
+                                data-nascita=${prof.dataNascita},
+								data-matricola=${prof.matricola},
+                                data-titoli=${#strings.listJoin(prof.titoli.![descrizione], ', ')}">
+                        Dettagli
+                    </button>
+
+                </div>
+            </td>
+        </tr>
+
+        <!-- RISULTATI RICERCA -->
+        <tr th:each="prof, st : ${risultati}"
+            th:if="${risultati != null and !#lists.isEmpty(risultati)}">
+
+            <td th:text="${st.count}"></td>
+            <td th:text="${prof.nome}"></td>
+            <td th:text="${prof.cognome}"></td>
+            <td th:text="${prof.codiceFiscale}"></td>
+            <td th:text="${prof.dataNascita}"></td>
+
+            <td class="text-center">
+                <div class="btn-group btn-group-sm">
+
+                    <button class="btn btn-warning modifica-btn"
+                            th:onclick="|editRow(this, ${prof.id})|">Modifica</button>
+
+                    <button class="btn btn-secondary annulla-btn d-none"
+                            onclick="cancelEdit(this)">Annulla</button>
+
+                    <button class="btn btn-success salva-btn d-none"
+                            th:onclick="|editRow(this, ${prof.id})|">Salva</button>
+
+                    <button class="btn btn-danger"
+                            th:onclick="|confirmDelete(${prof.id})|">Elimina</button>
+
+                    <button class="btn btn-info text-white"
+                            th:attr="data-id=${prof.id}, data-nome=${prof.nome}, data-cognome=${prof.cognome}"
+                            onclick="confirmAccount(this)">
+                        Account
+                    </button>
+
+                    <button class="btn btn-outline-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#dettagliModal"
+                            th:attr="
+                                data-nome=${prof.nome},
+                                data-cognome=${prof.cognome},
+                                data-materia=${prof.materia},
+                                data-nascita=${prof.dataNascita},
+								data-matricola=${prof.matricola},
+                                data-titoli=${#strings.listJoin(prof.titoli.![descrizione], ', ')}">
+                        Dettagli
+                    </button>
+
+                </div>
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+
+    <!-- PAGINAZIONE -->
+    <nav th:if="${risultati == null or #lists.isEmpty(risultati)}">
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item" th:classappend="${professoriPaginazione.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/professore(pagina=0,dimensione=${professoriPaginazione.size})}">
+                    Prima
+                </a>
+            </li>
+
+            <li class="page-item" th:classappend="${!professoriPaginazione.hasPrevious()} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/professore(pagina=${professoriPaginazione.number - 1},dimensione=${professoriPaginazione.size})}">
+                    Indietro
+                </a>
+            </li>
+
+            <li class="page-item disabled">
+                <span class="page-link">
+                    Pagina <span th:text="${professoriPaginazione.number + 1}"></span>
+                    di <span th:text="${professoriPaginazione.totalPages}"></span>
+                </span>
+            </li>
+
+            <li class="page-item" th:classappend="${!professoriPaginazione.hasNext()} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/professore(pagina=${professoriPaginazione.number + 1},dimensione=${professoriPaginazione.size})}">
+                    Avanti
+                </a>
+            </li>
+
+            <li class="page-item" th:classappend="${professoriPaginazione.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/professore(pagina=${professoriPaginazione.totalPages - 1},dimensione=${professoriPaginazione.size})}">
+                    Ultima
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+
+    <div class="text-center mt-4">
+        <a class="btn btn-secondary" th:href="@{/admin/home}">Torna alla Home</a>
+    </div>
+
+</div>
+
+<!-- MODAL DETTAGLI -->
+<div class="modal fade" id="dettagliModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+				<p><strong>Matricola:</strong> <span id="modalMatricola"></span></p>
+                <p><strong>Materia:</strong> <span id="modalMateria"></span></p>
+                <p><strong>Data nascita:</strong> <span id="modalNascita"></span></p>
+                <p><strong>Titoli di studio:</strong></p>
+                <p id="modalTitoli"></p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- BOOTSTRAP JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+/*  MODIFICA INLINE  */
+function editRow(button, id) {
+    const row = button.closest('tr');
+
+    const modBtn = row.querySelector('.modifica-btn');
+    const salvaBtn = row.querySelector('.salva-btn');
+    const annullaBtn = row.querySelector('.annulla-btn');
+
+    if (button.classList.contains('salva-btn')) {
+
+        const nome = row.cells[1].querySelector('input').value;
+        const cognome = row.cells[2].querySelector('input').value;
+        const cf = row.cells[3].querySelector('input').value;
+        const dataNascita = row.cells[4].querySelector('input').value;
+
+        if (!confirm("Confermi la modifica?")) return;
+
+        fetch(`/professore/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nome, cognome, codiceFiscale: cf, dataNascita })
+        })
+        .then(r => {
+            if (!r.ok) throw new Error();
+            return r.json();
+        })
+        .then(() => location.reload())
+        .catch(() => alert("Errore aggiornamento"));
+
+        return;
+    }
+
+    row.dataset.nome = row.cells[1].textContent;
+    row.dataset.cognome = row.cells[2].textContent;
+    row.dataset.cf = row.cells[3].textContent;
+    row.dataset.data = row.cells[4].textContent;
+
+    row.cells[1].innerHTML = `<input class="form-control form-control-sm" value="${row.dataset.nome}">`;
+    row.cells[2].innerHTML = `<input class="form-control form-control-sm" value="${row.dataset.cognome}">`;
+    row.cells[3].innerHTML = `<input class="form-control form-control-sm" value="${row.dataset.cf}">`;
+    row.cells[4].innerHTML = `<input type="date" class="form-control form-control-sm" value="${row.dataset.data}">`;
+
+    modBtn.classList.add('d-none');
+    salvaBtn.classList.remove('d-none');
+    annullaBtn.classList.remove('d-none');
+}
+
+function cancelEdit(button) {
+    const row = button.closest('tr');
+
+    row.cells[1].textContent = row.dataset.nome;
+    row.cells[2].textContent = row.dataset.cognome;
+    row.cells[3].textContent = row.dataset.cf;
+    row.cells[4].textContent = row.dataset.data;
+
+    row.querySelector('.modifica-btn').classList.remove('d-none');
+    row.querySelector('.salva-btn').classList.add('d-none');
+    row.querySelector('.annulla-btn').classList.add('d-none');
+}
+
+/*  ELIMINA  */
+function confirmDelete(id) {
+    if (confirm("Eliminare il professore?")) {
+    	alert("Professore cancellato!");
+        location.href = `/professore/elimina/${id}`;
+    }
+}
+
+/*  ACCOUNT  */
+function confirmAccount(button) {
+    if (!confirm("Generare account?")) return;
+
+    fetch(`/professore/account/${button.dataset.id}`, { method: "POST" })
+        .then(r => r.json())
+        .then(data => {
+            alert(`Username: ${data.username}\nPassword: ${data.password}`);
+            location.reload();
+        })
+        .catch(() => alert("Errore creazione account"));
+}
+
+/*  MODAL */
+document.getElementById('dettagliModal')
+    .addEventListener('show.bs.modal', function (event) {
+
+        const b = event.relatedTarget;
+
+        modalTitle.textContent = b.dataset.nome + " " + b.dataset.cognome;
+        modalMateria.textContent = b.dataset.materia || "-";
+        modalNascita.textContent = b.dataset.nascita || "-";
+		modalMatricola.textContent= b.dataset.matricola || "-";
+        modalTitoli.textContent = b.dataset.titoli || "Nessuno";
+    });
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Lista Registri</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<h1>Registri Classe</h1>
+
+<div class="top-bar">
+    <form th:action="@{/registro/cerca}" method="get">
+        <input type="text" name="keyword" placeholder="Cerca classe (es: 1A)">
+        <button type="submit">Cerca</button>
+    </form>
+
+    <form th:action="@{/registro/nuovo}" method="get">
+        <button type="submit">Inserisci</button>
+    </form>
+</div>
+
+
+<table>
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Nome Classe</th>
+        <th class="actions-cell">Azioni</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    <!-- PAGINAZIONE STANDARD -->
+    <tr th:each="reg, st : ${registroPaginazione?.content}"
+        th:if="${risultati == null or #lists.isEmpty(risultati)}"
+        th:attr="data-id=${reg.nomeClasse}">
+
+        <td th:text="${registroPaginazione.number * registroPaginazione.size + st.count}"></td>
+
+        <td th:text="${reg.nomeClasse}"></td>
+        
+ 
+        <td class="actions-cell">
+           
+                <button type="button"
+                th:attr="data-classe=${reg.nomeClasse}"
+                th:onclick="|confirmDelete(this)|">Elimina</button>
+            
+        </td>
+    </tr>
+	
+	
+    <!-- RISULTATI RICERCA -->
+	
+    <tr th:each="reg, st : ${risultati}"
+        th:if="${risultati != null && !#lists.isEmpty(risultati)}"
+        th:attr="data-id=${reg.nomeClasse}">
+
+        <td th:text="${st.count}"></td>
+        <td th:text="${reg.nomeClasse}"></td>
+
+        <td class="actions-cell">
+            <div class="actions">
+              
+                <button type="button" th:onclick="|confirmDelete(this)|">Elimina</button>
+
+            </div>
+        </td>
+    </tr>
+
+    </tbody>
+</table>
+
+<!-- PAGINAZIONE -->
+<div class="pagination"
+     th:if="${risultati == null or #lists.isEmpty(risultati)}">
+
+    <button th:disabled="${registroPaginazione.first}"
+            th:onclick="|location.href='@{/registro/home(pagina=0,dimensione=${registroPaginazione.size})}'|">Prima</button>
+
+    <button th:disabled="${!registroPaginazione.hasPrevious()}"
+            th:onclick="|location.href='@{/registro/home(pagina=${registroPaginazione.number - 1},dimensione=${registroPaginazione.size})}'|">&lt; Indietro</button>
+
+    <span>
+        Pagina <span th:text="${registroPaginazione.number + 1}"></span>
+        di <span th:text="${registroPaginazione.totalPages}"></span>
+    </span>
+
+    <button th:disabled="${!registroPaginazione.hasNext()}"
+            th:onclick="|location.href='@{/registro/home(pagina=${registroPaginazione.number + 1},dimensione=${registroPaginazione.size})}'|">Avanti ></button>
+
+    <button th:disabled="${registroPaginazione.last}"
+            th:onclick="|location.href='@{/registro/home(pagina=${registroPaginazione.totalPages - 1},dimensione=${registroPaginazione.size})}'|">Ultima</button>
+
+</div>
+
+
+<a th:href="@{/admin/home}" class="home-btn">Torna alla Home</a>
+
+<div th:if="${risultati != null && !#lists.isEmpty(risultati)}">
+    <form th:action="@{/registro/home}" method="get">
+        <button class="home-btn" type="submit">Torna alla paginazione</button>
+    </form>
+</div>
+
+<script>
+function confirmDelete(button) {
+	let row = button.closest('tr');
+	let nomeClasse = row.getAttribute('data-id')
+    if (confirm("Sei sicuro di voler eliminare il registro "+ nomeClasse+"?")) {
+    	alert(`Registro della classe ${nomeClasse} cancellato con successo!`);
+        location.href = `/registro/elimina/${nomeClasse}`;
+        
+    }
+}
+</script>
+
+
+
+</body>
+</html>

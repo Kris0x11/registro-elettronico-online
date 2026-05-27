@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Inserisci Voto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            /* --- Nuovo sfondo coerente --- */
+            background: linear-gradient(135deg, #cfd3df, #e9ecf3);
+
+            /* Pattern delicato */
+            background-image:
+                radial-gradient(circle at 1px 1px, rgba(255,255,255,0.5) 1px, transparent 0);
+            background-size: 20px 20px;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* --- SCHEDA CARD --- */
+        .card {
+            width: 80%;
+            max-width: 600px;
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+
+        .info-section {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-section p {
+            margin: 8px 0;
+            color: #555;
+            font-size: 15px;
+        }
+
+        .info-section p strong {
+            color: #333;
+        }
+
+        /* --- FORM STYLE --- */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            color: #333;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        input[type="number"],
+        input[type="date"] {
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+
+        input[type="number"]:focus,
+        input[type="date"]:focus {
+            border-color: #4a74f5;
+            outline: none;
+            box-shadow: 0 0 5px rgba(74, 116, 245, 0.3);
+        }
+
+        /* --- BOTTONE --- */
+        .submit-btn {
+            background: #4a74f5;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            margin-top: 25px;
+            transition: 0.3s;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background: #3b5ed1;
+        }
+
+        /* --- BACK LINK --- */
+        .back-btn {
+            margin-top: 20px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            background: #e6e9f3;
+            color: #333;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.3s;
+            text-align: center;
+            display: inline-block;
+            width: 80%;
+            max-width: 600px;
+            box-sizing: border-box;
+        }
+
+        .back-btn:hover {
+            background: #d4d9e8;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Inserimento Voto</h1>
+
+    <div class="card">
+        <div class="info-section">
+            <p><strong>Professore:</strong> <span th:text="${professore.nome} + ' ' + ${professore.cognome}"></span></p>
+            <p><strong>Materia:</strong> <span th:text="${professore.materia}"></span></p>
+            <p><strong>Studente:</strong> 
+                <span th:text="${stud.nome}"></span> 
+                <span th:text="${stud.cognome}"></span> 
+                (CF: <span th:text="${stud.codiceFiscale}"></span>)
+            </p>
+        </div>
+
+        <form th:action="@{/voto/salva}" th:object="${voto}" method="post">
+            <input type="hidden" name="studId" th:value="${stud.id}"/>
+            
+            <label for="voto">Voto (1-10):</label>
+            <input type="number" th:field="*{voto}" id="voto" min="1" max="10" placeholder="Es. 8" required/>
+            
+            <label for="data">Data:</label>
+            <input type="date" th:field="*{data}" id="data" required/>
+            
+            <button type="submit" class="submit-btn">Salva Voto</button>
+        </form>
+    </div>
+
+    <a href="javascript:history.back()" class="back-btn">Torna indietro</a>
+
+</body>
+</html>

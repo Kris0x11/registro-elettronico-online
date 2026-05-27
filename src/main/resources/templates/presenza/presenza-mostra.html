@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Le Mie Presenze</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        /* Stili specifici per rendere la pagina ancora più pulita */
+        .badge-presente {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 13px;
+            display: inline-block;
+        }
+        .badge-assente {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 13px;
+            display: inline-block;
+        }
+        .info-box {
+            background: white;
+            width: 80%;
+            padding: 20px;
+            border-radius: 18px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            box-sizing: border-box;
+        }
+        .info-box p {
+            margin: 5px 0;
+            font-size: 16px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Registro Scolastico</h1>
+    <h2>Riepilogo Presenze</h2>
+
+    <div class="info-box">
+        <p><strong>Studente:</strong> <span th:text="${studente.cognome + ' ' + studente.nome}">Cognome Nome</span></p>
+        <p><strong>Classe:</strong> <span th:text="${classe}">Classe</span></p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Stato Presenza</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:if="${#lists.isEmpty(presenza)}">
+                <td colspan="2" style="text-align: center; color: #777; padding: 20px;">
+                    Nessuna presenza registrata al momento.
+                </td>
+            </tr>
+            <tr th:each="p : ${presenza}">
+                <td th:text="${#temporals.format(p.data, 'dd/MM/yyyy')}">01/01/2026</td>
+                <td>
+                    <span th:if="${p.presente}" class="badge-presente">Presente</span>
+                    <span th:unless="${p.presente}" class="badge-assente">Assente</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a th:href="@{/userStudente}" class="home-btn" style="text-decoration: none; display: inline-block;">
+        Torna alla Home studente
+    </a>
+
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro Classe</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<!-- TITOLO -->
+<h1>Benvenuto nel registro</h1>
+<h2 th:text="${registro.nomeClasse}"></h2>
+
+<!-- TABELLA STUDENTI -->
+<h2>Studenti partecipi della classe</h2>
+
+
+<table>
+    </table>
+<table>
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Nome</th>
+        <th>Cognome</th>
+        <th>Azioni</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="stud, st : ${paginaStudenti.content}">
+        <td th:text="${paginaStudenti.number * paginaStudenti.size + st.count}">1</td>
+        <td th:text="${stud.nome}">Nome</td>
+        <td th:text="${stud.cognome}">Cognome</td>
+
+        <td class="actions">
+            <a th:href="@{/voto/nuovo/{idStudente}(idStudente=${stud.id})}" class="btn btn-primary">
+                Aggiungi voto
+            </a>
+
+            <a th:href="@{/sanzione/prof/nuovaSanzione/{idClasse}(idClasse=${registro.nomeClasse})}" class="btn btn-warning">
+                Aggiungi sanzione
+            </a>
+
+            <a th:href="@{/sanzione/prof/visualizzaSanzioneStudente/{idStudente}(idStudente=${stud.id})}" class="btn btn-info">
+                Visualizza sanzioni
+            </a>
+
+            <a th:href="@{/voto/visualizzaVotiStudente/{idStudente}(idStudente=${stud.id})}" class="btn btn-info">
+                Visualizza voti
+            </a>
+        </td>
+    </tr>
+</tbody>
+</table>
+
+<!-- PAGINAZIONE -->
+<div class="pagination">
+    <button th:disabled="${paginaStudenti.first}"
+            th:onclick="|location.href='?page=0'|">Prima</button>
+
+    <button th:disabled="${!paginaStudenti.hasPrevious()}"
+            th:onclick="|location.href='?page=${paginaStudenti.number - 1}'|">&lt; Indietro</button>
+
+    <span>
+        Pagina <span th:text="${paginaStudenti.number + 1}"></span>
+        di <span th:text="${paginaStudenti.totalPages}"></span>
+    </span>
+
+    <button th:disabled="${!paginaStudenti.hasNext()}"
+            th:onclick="|location.href='?page=${paginaStudenti.number + 1}'|">Avanti ></button>
+
+    <button th:disabled="${paginaStudenti.last}"
+            th:onclick="|location.href='?page=${paginaStudenti.totalPages - 1}'|">Ultima</button>
+</div>
+<div style="width: 80%; display: flex; justify-content: center; margin-bottom: 20px;">
+    <a th:href="@{/presenza/appello/{nomeClasse}(nomeClasse=${registro.nomeClasse})}" 
+       class="home-btn" 
+       style="text-decoration: none; display: inline-block; margin: 0;">
+        Appello
+    </a>
+</div>
+
+<button class="home-btn" th:onclick="|location.href='@{/userProfessore}'|">
+    Torna alla Home professore
+</button>
+
+</body>
+</html>

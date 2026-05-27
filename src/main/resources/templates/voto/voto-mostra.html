@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Voti studente</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            /* --- Nuovo sfondo coerente --- */
+            background: linear-gradient(135deg, #cfd3df, #e9ecf3);
+
+            /* Pattern delicato */
+            background-image:
+                radial-gradient(circle at 1px 1px, rgba(255,255,255,0.5) 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* --- TABLE STYLE --- */
+        table {
+            width: 80%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        th {
+            background: #e6e9f3;
+            padding: 14px;
+            text-align: left;
+            font-weight: bold;
+            color: #333;
+        }
+
+        td {
+            padding: 14px;
+            border-top: 1px solid #ddd;
+        }
+
+        /* Input all'interno della tabella durante la modifica */
+        td input {
+            padding: 6px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            width: 90%;
+            font-family: inherit;
+        }
+
+        .actions-cell {
+            text-align: center;
+            white-space: nowrap;
+            width: 200px;
+        }
+
+        /* --- BOTTONI AZIONI --- */
+        .actions button {
+            background: #4a74f5;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-left: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .actions button:hover {
+            background: #3b5ed1;
+        }
+
+        /* --- HOME / BACK BUTTON --- */
+        .back-btn {
+            margin-top: 15px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            background: #4a74f5;
+            color: white;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: #3b5ed1;
+        }
+
+        /* Utility class per nascondere gli elementi */
+        .d-none {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <h2 th:if="${studente != null}">
+        Votazioni di: <span th:text="${studente.nome + ' ' + studente.cognome}">Nome studente</span>
+    </h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Voto</th>
+                <th>Data</th>
+                <th class="actions-cell" th:if="${isProf}">Azioni</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:if="${#lists.isEmpty(voti)}">
+                <td colspan="3" style="text-align: center; color: #666;">Nessun voto disponibile</td>
+            </tr>
+            <tr th:each="voto : ${voti}">
+                <td th:text="${voto.voto}"></td>
+                <td th:text="${voto.data}"></td>
+                <td class="actions-cell" th:if=${isProf}> 
+                    <div class="actions">
+                        <button type="button" class="modifica-btn" th:onclick="|editRow(this, ${voto.id})|">Modifica</button>
+                        <button type="button" class="salva-btn d-none" th:onclick="|editRow(this, ${voto.id})|">Salva</button>
+                        <button type="button" class="annulla-btn d-none" onclick="cancelEdit(this)">Annulla</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="javascript:history.back()" class="back-btn">Torna indietro</a>
+
+<script>
+/* MODIFICA INLINE  */
+function editRow(button, id) {
+    const row = button.closest('tr');
+    const modBtn = row.querySelector('.modifica-btn');
+    const salvaBtn = row.querySelector('.salva-btn');
+    const annullaBtn = row.querySelector('.annulla-btn');
+
+    if (button.classList.contains('salva-btn')) {
+
+        const votazione = row.cells[0].querySelector('input').value;
+        const data = row.cells[1].querySelector('input').value;
+
+        if (!confirm("Confermi la modifica?")) return;
+
+        fetch(`/voto/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ votazione, data })
+        })
+        .then(r => {
+            if (!r.ok) throw new Error();
+            return r.json();
+        })
+        .then(() => location.reload())
+        .catch(() => alert("Errore aggiornamento"));
+
+        return;
+    }
+
+    row.dataset.votazione = row.cells[0].textContent.trim();
+    row.dataset.data = row.cells[1].textContent.trim();
+
+    row.cells[0].innerHTML = `<input type="number" value="${row.dataset.votazione}">`;
+    row.cells[1].innerHTML = `<input type="date" value="${row.dataset.data}">`;
+
+    modBtn.classList.add('d-none');
+    salvaBtn.classList.remove('d-none');
+    annullaBtn.classList.remove('d-none');
+}
+
+function cancelEdit(button) {
+    const row = button.closest('tr');
+    row.cells[0].textContent = row.dataset.votazione;
+    row.cells[1].textContent = row.dataset.data;
+
+    row.querySelector('.modifica-btn').classList.remove('d-none');
+    row.querySelector('.salva-btn').classList.add('d-none');
+    row.querySelector('.annulla-btn').classList.add('d-none');
+}
+</script>
+
+</body>
+</html>
+
+
+
+
+						
+				
+	

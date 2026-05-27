@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sanzioni Studente</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            /* --- Nuovo sfondo coerente --- */
+            background: linear-gradient(135deg, #cfd3df, #e9ecf3);
+
+            /* Pattern delicato */
+            background-image:
+                radial-gradient(circle at 1px 1px, rgba(255,255,255,0.5) 1px, transparent 0);
+            background-size: 20px 20px;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* --- TABLE STYLE --- */
+        table {
+            width: 85%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        th {
+            background: #e6e9f3;
+            padding: 14px;
+            text-align: left;
+            font-weight: bold;
+            color: #333;
+        }
+
+        td {
+            padding: 14px;
+            border-top: 1px solid #ddd;
+            color: #444;
+        }
+
+        /* Input all'interno della tabella durante la modifica */
+        td input {
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            width: 90%;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .actions-cell {
+            text-align: center;
+            white-space: nowrap;
+            width: 250px;
+        }
+
+        /* --- BOTTONI AZIONI --- */
+        .actions button {
+            background: #4a74f5;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-left: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .actions button:hover {
+            background: #3b5ed1;
+        }
+
+        /* Stile specifico per il bottone elimina */
+        .actions .elimina-btn {
+            background: #e15554;
+        }
+
+        .actions .elimina-btn:hover {
+            background: #c43d3c;
+        }
+
+        /* --- BACK BUTTON --- */
+        .back-btn {
+            margin-top: 15px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            background: #4a74f5;
+            color: white;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: #3b5ed1;
+        }
+
+        /* Utility class per nascondere gli elementi */
+        .d-none {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <h2 th:if="${studente != null}">
+        Sanzioni di: <span th:text="${studente.nome + ' ' + studente.cognome}">Nome Studente</span>
+    </h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Descrizione</th>
+                <th>Tipo</th>
+                <th>Data</th>
+               
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:if="${#lists.isEmpty(sanzione)}">
+                <td colspan="4" style="text-align: center; color: #666;">Nessuna sanzione disponibile per questo studente.</td>
+            </tr>
+
+            <tr th:each="s : ${sanzione}" 
+                th:data-data="${s.data}" 
+                th:data-nomeStudente="${studente.nome}" 
+                th:data-cognomeStudente="${studente.cognome}"
+                th:data-id-studente="${studente.id}">
+                
+                <td th:text="${s.descrizione}">Descrizione</td>
+                <td th:text="${s.tipo}">Tipo</td>
+                <td th:text="${s.data}">Data</td>
+               
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="javascript:history.back()" class="back-btn">Torna indietro</a>
+    
+<script>
+/* MODIFICA INLINE  */
+function editRow(button, id) {
+    const row = button.closest('tr');
+    const modBtn = row.querySelector('.modifica-btn');
+    const salvaBtn = row.querySelector('.salva-btn');
+    const annullaBtn = row.querySelector('.annulla-btn');
+    const eliminaBtn = row.querySelector('.elimina-btn');
+
+    if (button.classList.contains('salva-btn')) {
+
+        const descr = row.cells[0].querySelector('input').value;
+        const tipo = row.cells[1].querySelector('input').value;
+        const data = row.cells[2].querySelector('input').value;
+
+        if (!confirm("Confermi la modifica?")) return;
+
+        fetch(`/sanzione/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ descr, tipo, data })
+        })
+        .then(r => {
+            if (!r.ok) throw new Error();
+            return r.json();
+        })
+        .then(() => location.reload())
+        .catch(() => alert("Errore aggiornamento"));
+
+        return;
+    }
+
+    row.dataset.descr = row.cells[0].textContent.trim();
+    row.dataset.tipo = row.cells[1].textContent.trim();
+    row.dataset.data = row.cells[2].textContent.trim();
+
+    row.cells[0].innerHTML = `<input type="text" value="${row.dataset.descr}">`;
+    row.cells[1].innerHTML = `<input type="text" value="${row.dataset.tipo}">`;
+    row.cells[2].innerHTML = `<input type="date" value="${row.dataset.data}">`;
+
+    modBtn.classList.add('d-none');
+    eliminaBtn.classList.add('d-none');
+    salvaBtn.classList.remove('d-none');
+    annullaBtn.classList.remove('d-none');
+}
+
+function cancelEdit(button) {
+    const row = button.closest('tr');
+
+    row.cells[0].textContent = row.dataset.descr;
+    row.cells[1].textContent = row.dataset.tipo;
+    row.cells[2].textContent = row.dataset.data;
+
+    row.querySelector('.modifica-btn').classList.remove('d-none');
+    row.querySelector('.elimina-btn').classList.remove('d-none');
+    row.querySelector('.salva-btn').classList.add('d-none');
+    row.querySelector('.annulla-btn').classList.add('d-none');
+}
+
+function confirmDelete(button, id) {
+    const row = button.closest('tr');
+    const idStudente = row.dataset.idStudente;
+    const data = row.dataset.data;
+    const nome = row.dataset.nomeStudente;
+    const cognome = row.dataset.cognomeStudente;
+    
+    if (confirm(`Sei sicuro di voler eliminare la sanzione di ${nome} ${cognome} in data ${data}?`)) {
+        location.href = `/sanzione/elimina/${id}/${idStudente}`;
+    }
+}
+</script>
+
+</body>
+</html>			
+				
