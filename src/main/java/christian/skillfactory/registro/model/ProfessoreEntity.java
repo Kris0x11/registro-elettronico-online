@@ -42,7 +42,7 @@ public class ProfessoreEntity extends Persona {
     @ManyToMany(mappedBy="listaProf")
     private List<RegistroEntity> registro = new ArrayList<>();
                 
-    // === CONSTRUCTORS ===
+    //  CONSTRUCTORS 
     public ProfessoreEntity() {}
 
     public ProfessoreEntity(String nome, String cognome, String codiceFiscale, String materia, LocalDate dataNascita, String matricola) {
@@ -52,7 +52,7 @@ public class ProfessoreEntity extends Persona {
         this.matricola = matricola;
     }
 
-    // === GETTERS AND SETTERS ===
+    //  GETTERS AND SETTERS 
     public String getMateria() {
         return materia;
     }
@@ -101,9 +101,8 @@ public class ProfessoreEntity extends Persona {
         this.registro = registro;
     }
 
-    // === JPA COMPLIANT EQUALS & HASHCODE ===
-    // Relying strictly on the inherited primary key (id) from Persona.
-    // This safely ensures that lazy-loaded proxy collections don't corrupt entity tracking.
+    //  JPA COMPLIANT EQUALS & HASHCODE 
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

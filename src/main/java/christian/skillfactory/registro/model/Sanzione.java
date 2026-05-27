@@ -47,7 +47,7 @@ public class Sanzione {
     )
     private List<StudenteEntity> studenti;
 
-    // === CONSTRUCTORS ===
+    // CONSTRUCTORS 
     public Sanzione() {}
     
     public Sanzione(String tipo, LocalDate data, String descrizione) {
@@ -56,7 +56,7 @@ public class Sanzione {
         this.descrizione = descrizione;
     }
 
-    // === GETTERS AND SETTERS ===
+    //  GETTERS AND SETTERS 
     public Long getId() {
         return id;
     }
@@ -106,8 +106,7 @@ public class Sanzione {
     }
 
     // === JPA COMPLIANT EQUALS & HASHCODE ===
-    // Based strictly on the primary key (id) to prevent StackOverflowError 
-    // caused by bidirectional relationship loops during object comparisons.
+   
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

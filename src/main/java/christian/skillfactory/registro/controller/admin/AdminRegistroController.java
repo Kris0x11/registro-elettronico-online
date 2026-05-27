@@ -18,6 +18,7 @@ import christian.skillfactory.registro.model.Voto;
 import christian.skillfactory.registro.model.ProfessoreEntity;
 import christian.skillfactory.registro.repository.ProfessoreRepository;
 import christian.skillfactory.registro.repository.RegistroRepository;
+import christian.skillfactory.registro.repository.SanzioneRepository;
 import christian.skillfactory.registro.repository.StudenteRepository;
 import jakarta.transaction.Transactional;
 
@@ -40,12 +41,15 @@ public class AdminRegistroController {
 	private final RegistroRepository repository;
 	private final ProfessoreRepository repProf;
 	private final StudenteRepository repStudente;
+	private final SanzioneRepository repSanzione;
 	
-	public AdminRegistroController(RegistroRepository repository,ProfessoreRepository repProf,StudenteRepository repStudente)
+	public AdminRegistroController(RegistroRepository repository,ProfessoreRepository repProf,
+			StudenteRepository repStudente, SanzioneRepository repSazione)
 	{
 		this.repository=repository;
 		this.repProf=repProf;
 		this.repStudente=repStudente;
+		this.repSanzione=repSazione;
 	}
 
 	
@@ -115,17 +119,17 @@ return "admin/registro-home";
 	public String cerca(@RequestParam String keyword,
 	                    Model model) {
 
-	    // FILTRO RICERCA
+		// Setup search probe
 	   RegistroEntity probe = new RegistroEntity();
 	    probe.setNomeClasse(keyword);
 
 	    ExampleMatcher matcher = ExampleMatcher.matchingAny()
 	            .withIgnoreCase()
 	            .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
-	            
+	    // Perform search using the example   
 	    Example<RegistroEntity> example = Example.of(probe, matcher);
 
-	    // RISULTATI DELLA RICERCA
+	    // Add search results and default pagination to the model
 	    List<RegistroEntity> risultati = repository.findAll(example);
 	    model.addAttribute("risultati", risultati);
 	    Pageable pagination = PageRequest.of(0, 5);
@@ -140,25 +144,38 @@ return "admin/registro-home";
      */
 	@GetMapping("/elimina/{id}")
 	@Transactional
-	public String elimina(@PathVariable String id)
-	{
+	public String elimina(@PathVariable String id) {
+	    // 1. Retrieve the registry entity or throw an exception if not found
 	    RegistroEntity reg = repository.findById(id)
 	            .orElseThrow(() -> new RuntimeException("registro non trovato"));
 
-	    for (StudenteEntity s : reg.getStudenti()) {
-	    	s.setRegstudenti(null);    	    	
+	    // Unlink sanctions
+	    if (reg.getSanzione() != null) {
+	        repSanzione.deleteAll(reg.getSanzione());
+	        reg.getSanzione().clear(); // Clear the in-memory list to sync Hibernate state
 	    }
-	    repStudente.saveAll(reg.getStudenti());
+
+	    //  Unlink students (One-To-Many relationship handling)
+	    if (reg.getStudenti() != null) {
+	        for (StudenteEntity s : reg.getStudenti()) {
+	            s.setRegstudenti(null); // Break the bidirectional reference to the registry     
+	        }
+	        repStudente.saveAll(reg.getStudenti());
+	        reg.getStudenti().clear(); // Clear the in-memory collection for Hibernate cache consistency
+	    }
 	    
-	   for (ProfessoreEntity prof : reg.getLista_prof())
-	   {
-		   prof.getRegistro().remove(reg);
-	   }
-	   reg.getLista_prof().clear();
+	    //  Unlink professors (Many-To-Many relationship handling)
+	    if (reg.getLista_prof() != null) {
+	        for (ProfessoreEntity prof : reg.getLista_prof()) {
+	            prof.getRegistro().remove(reg); // Remove this registry from the professor's list
+	        }
+	        reg.getLista_prof().clear(); // Clear the inverted relationship list
+	    }
 	    
+	    //  The entity is now completely isolated, safe to delete
 	    repository.delete(reg);
-	    repository.flush();	
-	  
+	    
+	   
 
 	    return "redirect:/registro/home";
 	}

@@ -31,7 +31,7 @@ public class Voto {
     @JoinColumn(name = "studente_id", nullable = true)
     private StudenteEntity votoStudente;
 
-    // === CONSTRUCTORS ===
+    // CONSTRUCTORS 
     public Voto() {}
     
     public Voto(Double voto, LocalDate data) {
@@ -39,7 +39,7 @@ public class Voto {
         this.data = data;
     }
 
-    // === GETTERS AND SETTERS ===
+    // GETTERS AND SETTERS 
     public Long getId() {
         return id;
     }
@@ -72,9 +72,8 @@ public class Voto {
         this.votoStudente = votoStudente;
     }
 
-    // === JPA COMPLIANT EQUALS & HASHCODE ===
-    // Relying strictly on the database primary key (id) to avoid circular reference loops
-    // and recursive memory issues when interacting with the associated StudenteEntity.
+    // JPA COMPLIANT EQUALS & HASHCODE 
+   
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

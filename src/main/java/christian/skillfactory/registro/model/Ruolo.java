@@ -17,14 +17,14 @@ public class Ruolo implements GrantedAuthority {
     @Id
     private String nome; // Primary Key: Role name (e.g., "ROLE_ADMIN", "ROLE_PROFESSOR")
     
-    // === CONSTRUCTORS ===
+    // CONSTRUCTORS
     public Ruolo() {}
 
     public Ruolo(String nome) {
         this.nome = nome;
     }
 
-    // === SPRING SECURITY GRANTEDAUTHORITY IMPLEMENTATION ===
+    // SPRING SECURITY GRANTEDAUTHORITY IMPLEMENTATION 
     /**
      * Returns the string representation of the authority (role name).
      * Required by Spring Security to handle role-based access control.
@@ -34,7 +34,7 @@ public class Ruolo implements GrantedAuthority {
         return nome;
     }
 
-    // === GETTERS AND SETTERS ===
+    //  GETTERS AND SETTERS
     public String getNome() {
         return nome;
     }
@@ -43,8 +43,7 @@ public class Ruolo implements GrantedAuthority {
         this.nome = nome;
     }
 
-    // === JPA COMPLIANT EQUALS & HASHCODE ===
-    // Based on the primary key string 'nome' using instanceof for Hibernate proxy compatibility
+    //  JPA COMPLIANT EQUALS & HASHCODE 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

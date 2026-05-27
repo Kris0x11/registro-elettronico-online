@@ -55,7 +55,7 @@ public class StudenteEntity extends Persona {
     @OneToMany(mappedBy = "studente")
     private List<Presenza> listaPresenze;
 
-    // === CONSTRUCTORS ===
+    //  CONSTRUCTORS 
     public StudenteEntity() {}
 
     public StudenteEntity(String nome, String cognome, String codiceFiscale, String matricola, LocalDate dataNascita) {
@@ -64,7 +64,7 @@ public class StudenteEntity extends Persona {
         this.dataNascita = dataNascita;
     }
 
-    // === GETTERS AND SETTERS ===
+    // GETTERS AND SETTERS 
     public String getMatricola() {
         return matricola;
     }
@@ -121,9 +121,7 @@ public class StudenteEntity extends Persona {
         this.listaPresenze = listaPresenze;
     }
 
-    // === JPA COMPLIANT EQUALS & HASHCODE ===
-    // Relying strictly on the inherited primary key (id) from Persona.
-    // This safely isolates object comparisons from complex, nested collection graphs and prevents recursion loops.
+    //  JPA COMPLIANT EQUALS & HASHCODE 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

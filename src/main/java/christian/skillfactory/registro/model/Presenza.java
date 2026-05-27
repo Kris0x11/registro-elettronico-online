@@ -35,7 +35,7 @@ public class Presenza {
 
     private boolean presente;
 
-    // === CONSTRUCTORS ===
+    // CONSTRUCTORS 
     public Presenza() {}
 
     public Presenza(LocalDate data, String nomeClasse, StudenteEntity studente, boolean presente) {
@@ -45,7 +45,7 @@ public class Presenza {
         this.presente = presente;
     }
 
-    // === GETTERS AND SETTERS ===
+    //  GETTERS AND SETTERS 
     public Long getId() {
         return id;
     }
@@ -86,19 +86,18 @@ public class Presenza {
         this.presente = presente;
     }
 
-    // === TO STRING ===
+    // TO STRING 
     @Override
     public String toString() {
         return "Appello [id=" + id + ", data=" + data + ", nomeClasse=" + nomeClasse + ", studente=" + studente
                 + ", presente=" + presente + "]";
     }
 
-    // === JPA COMPLIANT EQUALS & HASHCODE ===
-    // Based strictly on the database primary key (id) to handle safe removals from lists/sets
+    //  JPA COMPLIANT EQUALS & HASHCODE =
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null) return false; // Fixed: changed 'obj' to 'o' to match the method parameter
+        if (o == null) return false; 
         if (!(o instanceof Presenza)) return false;
         Presenza presenza = (Presenza) o;
         return id != null && id.equals(presenza.id);

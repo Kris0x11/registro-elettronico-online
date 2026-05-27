@@ -49,7 +49,7 @@ public class RegistroEntity {
     )
     private List<ProfessoreEntity> listaProf = new ArrayList<>();
     
-    // === CONSTRUCTORS ===
+    // CONSTRUCTORS 
     public RegistroEntity() {}
     
     public RegistroEntity(String nomeClasse, String annoScolastico) {
@@ -57,7 +57,7 @@ public class RegistroEntity {
         this.annoScolastico = annoScolastico;
     }
 
-    // === GETTERS AND SETTERS ===
+    // GETTERS AND SETTERS 
     public String getNomeClasse() {
         return nomeClasse;
     }
@@ -98,8 +98,7 @@ public class RegistroEntity {
         this.sanzione = sanzione;
     }
 
-    // === JPA COMPLIANT EQUALS & HASHCODE ===
-    // Relying strictly on the unique business key (nomeClasse) to ensure reliable collection mapping and entity safety
+    //JPA COMPLIANT EQUALS & HASHCODE 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -180,10 +180,10 @@ public class AdminStudenteController {
 	    StudenteEntity probe = new StudenteEntity();
 	    probe.setNome(keyword);
 
+	    // Perform search using the example   
 	    ExampleMatcher matcher = ExampleMatcher.matchingAny()
 	            .withIgnoreCase()
 	            .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
-	    // Perform search using the example   
 	    Example<StudenteEntity> example = Example.of(probe, matcher);
 	    List<StudenteEntity> risultati = repository.findAll(example);
 	    

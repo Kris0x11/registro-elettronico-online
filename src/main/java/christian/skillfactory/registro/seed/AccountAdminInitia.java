@@ -11,6 +11,11 @@ import christian.skillfactory.registro.repository.AccountRepository;
 import christian.skillfactory.registro.repository.RuoloRepository;
 
 import jakarta.transaction.Transactional;
+
+/**
+ * Database seeder that executes on application startup.
+ * Automatically initializes the default ADMIN role and account if they do not exist.
+ */
 @Component
 public class AccountAdminInitia implements CommandLineRunner {
 
@@ -23,29 +28,34 @@ public class AccountAdminInitia implements CommandLineRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    /**
+     * Callback method used to run the bean on Spring Boot application startup.
+     */
     @Override
     @Transactional
     public void run(String... args) {
-        System.out.println("Inizializzazione account ADMIN...");
+        System.out.println("Initializing default ADMIN credentials...");
 
-        // Creo ruolo admin se non esiste
+        //  Check or create the ADMIN role
+        // Fetch the role from the database or create it dynamically using a lambda supplier expression
         Ruolo adminRole = ruoloRepo.findById("ROLE_ADMIN")
                 .orElseGet(() -> {
                     Ruolo r = new Ruolo();
                     r.setNome("ROLE_ADMIN");
-                    return ruoloRepo.saveAndFlush(r); // flush immediato
+                    return ruoloRepo.saveAndFlush(r); // Immediate flush to guarantee persistence before mapping the account
                 });
 
-        // Creo account admin se non esiste
+        // Check or create the default ADMIN account
+        // If the username 'admin' isn't registered, create the default credentials and encrypt the password
         if (accountRepo.findByUsername("admin").isEmpty()) {
             Account admin = new Account();
             admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode("admin123"));
+            admin.setPassword(passwordEncoder.encode("admin123")); // Encrypt plain text using BCrypt via PasswordEncoder
             admin.setRuolo(adminRole);
+            
             accountRepo.save(admin);
-            System.out.println("Account admin creato!");
+            System.out.println("Default admin account successfully created!");
         }
-
     }
 }
 

@@ -23,7 +23,7 @@ public class TitoloStudio {
     @ManyToMany(mappedBy = "titoli")
     private List<ProfessoreEntity> professori;
 
-    // === CONSTRUCTORS ===
+    //  CONSTRUCTORS 
     public TitoloStudio() {}
 
     public TitoloStudio(String descrizione, String tipo) {
@@ -31,7 +31,7 @@ public class TitoloStudio {
         this.tipo = tipo;
     }
 
-    // === GETTERS AND SETTERS ===
+    // GETTERS AND SETTERS 
     public Long getId() { 
         return id;
     }
@@ -64,9 +64,8 @@ public class TitoloStudio {
         this.tipo = tipo;
     }
 
-    // === JPA COMPLIANT EQUALS & HASHCODE ===
-    // Relying strictly on the database primary key (id) to avoid recursive loops 
-    // with the bidirectional relationship linked to the professor entities.
+    // JPA COMPLIANT EQUALS & HASHCODE
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

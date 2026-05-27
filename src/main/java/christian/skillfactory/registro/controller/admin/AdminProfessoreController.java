@@ -179,17 +179,17 @@ public class AdminProfessoreController {
      */
     @GetMapping("/cerca")
     public String cerca(@RequestParam String keyword, Model model) {
+		// Setup search probe
 
         ProfessoreEntity probe = new ProfessoreEntity();
         probe.setNome(keyword);
         probe.setCognome(keyword);
-
+	    // Perform search using the example   
         ExampleMatcher matcher = ExampleMatcher.matchingAny()
                 .withIgnoreCase()
                 .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
-
         Example<ProfessoreEntity> example = Example.of(probe, matcher);
-
+	    // Add search results and default pagination to the model
         List<ProfessoreEntity> risultati = repository.findAll(example);
         model.addAttribute("risultati", risultati);
 
@@ -209,7 +209,6 @@ public class AdminProfessoreController {
                 .orElseThrow(() -> new RuntimeException("Professore non trovato"));
 
         //  Many-to-Many cleanup with REGISTRO
-        // Remove the professor from each associated registry to break the bond in the prof_registro join table
         for (RegistroEntity reg : prof.getRegistro()) {
             reg.getLista_prof().remove(prof);
            
@@ -217,18 +216,16 @@ public class AdminProfessoreController {
         prof.getRegistro().clear();
 
         //  Many-to-Many cleanup with TITOLI
-        // Clear the Set to remove the records from the professore_titolo join table
         prof.setTitoli(null); 
 
      // One-to-One cleanup with ACCOUNT
-     // Disconnect the account or delete it to break the relationship in the account table
         if (prof.getAccount() != null) {
             Account account = prof.getAccount();
             prof.setAccount(null); // Rompiamo il riferimento lato Professore
             accountRepo.delete(account); // Eliminiamo l'account dal DB
         }
 
-        // 5. Ora che il Professore non ha più dipendenze, possiamo eliminarlo
+        // Delete
         repository.delete(prof);
 
         return "redirect:/professore";
