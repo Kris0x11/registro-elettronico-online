@@ -76,7 +76,8 @@ public class AdminStudenteController {
      * Uses Pageable to ensure database-level optimization.
      */
 	@GetMapping
-	public String paginazione(Model model, @RequestParam(defaultValue = "0") int pagina, @RequestParam(defaultValue="5") int dimensione)
+	public String paginazione(Model model, @RequestParam(defaultValue = "0") int pagina, 
+			@RequestParam(defaultValue="5") int dimensione)
 	{
 		Pageable pagination = PageRequest.of(pagina,dimensione);
 		Page<StudenteEntity> paginazioneStudenti = repository.findAll(pagination);
@@ -179,20 +180,23 @@ public class AdminStudenteController {
 		// Setup search probe
 	    StudenteEntity probe = new StudenteEntity();
 	    probe.setNome(keyword);
+	    probe.setCognome(keyword);
 
 	    // Perform search using the example   
 	    ExampleMatcher matcher = ExampleMatcher.matchingAny()
-	            .withIgnoreCase()
+	            .withIgnoreCase()	          
 	            .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
 	    Example<StudenteEntity> example = Example.of(probe, matcher);
 	    List<StudenteEntity> risultati = repository.findAll(example);
 	    
 	    // Add search results and default pagination to the model
 	    model.addAttribute("risultati", risultati);
-	    Pageable pagination = PageRequest.of(0, 5);
-	    Page<StudenteEntity> studentiPaginazione = repository.findAll(pagination);
-	    model.addAttribute("studentiPaginazione", studentiPaginazione);
 	    
+	    Pageable pagination = PageRequest.of(0, 5);
+	    Page<StudenteEntity> studentiPaginazione =
+	            repository.findAll(pagination);
+
+	    model.addAttribute("studentiPaginazione", studentiPaginazione);
 	    return "admin/studenti-paginazione";
 	}
 

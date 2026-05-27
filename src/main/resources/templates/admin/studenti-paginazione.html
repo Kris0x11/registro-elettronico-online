@@ -23,7 +23,7 @@
 </div>
 
 
-<p th:if="${studentiPaginazione.content == null or #lists.isEmpty(studentiPaginazione.content)}">
+<p th:if="${studentiPaginazione == null}">
 	 Nessun studente disponibile </p>
 	
 <table>
@@ -110,22 +110,30 @@
 <div class="pagination"
      th:if="${risultati == null or #lists.isEmpty(risultati)}">
 
-    <button th:disabled="${studentiPaginazione?.first}"
-            th:onclick="|location.href='@{/studente(pagina=0,dimensione=${studentiPaginazione?.size})}'|">Prima</button>
+    <button th:disabled="${studentiPaginazione.first}"
+            th:onclick="|location.href='@{/studente(pagina=0,dimensione=${studentiPaginazione.size})}'|">
+        Prima
+    </button>
 
-    <button th:disabled="${!(studentiPaginazione?.hasPrevious())}"
-            th:onclick="|location.href='@{/studente(pagina=${studentiPaginazione?.number - 1},dimensione=${studentiPaginazione?.size})}'|">&lt; Indietro</button>
+    <button th:disabled="${!studentiPaginazione.hasPrevious()}"
+            th:onclick="|location.href='@{/studente(pagina=${studentiPaginazione.number - 1},dimensione=${studentiPaginazione.size})}'|">
+        &lt; Indietro
+    </button>
 
     <span>
-        Pagina <span th:text="${studentiPaginazione?.number + 1}"></span>
-        di <span th:text="${studentiPaginazione?.totalPages}"></span>
+        Pagina <span th:text="${studentiPaginazione.number + 1}"></span>
+        di <span th:text="${studentiPaginazione.totalPages}"></span>
     </span>
 
-    <button th:disabled="${!(studentiPaginazione?.hasNext())}"
-            th:onclick="|location.href='@{/studente(pagina=${studentiPaginazione?.number + 1},dimensione=${studentiPaginazione?.size})}'|">Avanti ></button>
+    <button th:disabled="${!studentiPaginazione.hasNext()}"
+            th:onclick="|location.href='@{/studente(pagina=${studentiPaginazione.number + 1},dimensione=${studentiPaginazione.size})}'|">
+        Avanti >
+    </button>
 
-    <button th:disabled="${studentiPaginazione?.last}"
-            th:onclick="|location.href='@{/studente(pagina=${studentiPaginazione?.totalPages - 1},dimensione=${studentiPaginazione?.size})}'|">Ultima</button>
+    <button th:disabled="${studentiPaginazione.last}"
+            th:onclick="|location.href='@{/studente(pagina=${studentiPaginazione.totalPages - 1},dimensione=${studentiPaginazione.size})}'|">
+        Ultima
+    </button>
 
 </div>
 

@@ -2,18 +2,19 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8" />
-    <title>Inserimento Studente</title>
+    <title>Inserimento Registro</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
             background: #f4f6f9;
             display: flex;
             justify-content: center;
-            padding-top: 40px;
+            padding: 40px 20px;
             position: relative;
         }
 
-        /* --- BOTTONE INDIETRO --- */
+        /* BACK BUTTON */
         .back-btn {
             position: absolute;
             top: 20px;
@@ -30,7 +31,6 @@
             transition: background 0.3s;
         }
 
-        /* Animazione freccia */
         .back-btn .arrow {
             display: inline-block;
             transition: transform 0.3s ease;
@@ -44,45 +44,69 @@
             background: #3b5ed1;
         }
 
-        /* --- CARD --- */
+        /* CARD */
         .card {
             background: white;
-            padding: 30px;
+            padding: 35px;
             border-radius: 20px;
-            width: 420px;
+            width: 100%;
+            max-width: 550px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
         h1 {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             color: #333;
         }
 
-        label {
-            font-weight: bold;
+        .form-group {
+            margin-bottom: 22px;
         }
 
-        input[type="text"] {
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        small {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        input[type="text"],
+        select {
             width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            margin-bottom: 18px;
+            padding: 12px;
             border-radius: 12px;
             border: 1px solid #ccc;
             box-sizing: border-box;
+            font-size: 15px;
+            background: white;
+        }
+
+        select {
+            min-height: 140px;
+        }
+
+        select option {
+            padding: 8px;
         }
 
         button {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             border: none;
             background: #4a74f5;
             color: white;
             font-size: 16px;
             border-radius: 12px;
             cursor: pointer;
-            transition: 0.3s;
+            transition: background 0.3s;
+            margin-top: 10px;
         }
 
         button:hover {
@@ -90,42 +114,52 @@
         }
     </style>
 </head>
-<body>
 
+<body>
 
 <a class="back-btn" th:href="@{/registro/home}">
     <span class="arrow">👈</span> Indietro
 </a>
 
 <div class="card">
-<h1>Inserisci registro</h1>
 
-<form th:action="@{/registro/salva}" th:object="${registro}" method="post">
+    <h1>Inserisci Registro</h1>
 
-    <label>Nome:</label>
-    <input type="text" th:field="*{nomeClasse}" />
+    <form th:action="@{/registro/salva}" th:object="${registro}" method="post">
 
-	<label>Prof:</label>
-	    <small>(Tenere premuto CTRL per selezione multipla)</small>
-	    <select name="profSelect" multiple size="5">
-	        <option th:each="prof : ${prof}" 
-	                th:value="${prof.id}" 
-	                th:text="${prof.cognome} + ' (' + ${prof.nome} + ')'">
-	        </option>
-	    </select>
-		<label>Studenti:</label>
-			    <small>(Tenere premuto CTRL per selezione multipla)</small>
-				<select name="studentiSelect" multiple size="5">
-				    <option th:each="studente : ${studente}" 
-				            th:value="${studente.id}" 
-				            th:text="${studente.cognome} + ' (' + ${studente.nome} + ')'">
-				    </option>
-				</select>
+        <div class="form-group">
+            <label>Nome Classe</label>
+            <input type="text" th:field="*{nomeClasse}" />
+        </div>
 
+        <div class="form-group">
+            <label>Professori</label>
+            <small>Tenere premuto CTRL per selezione multipla</small>
 
-    <button type="submit">Invia</button>
+            <select name="profSelect" multiple>
+                <option th:each="prof : ${prof}"
+                        th:value="${prof.id}"
+                        th:text="${prof.cognome} + ' (' + ${prof.nome} + ')'">
+                </option>
+            </select>
+        </div>
 
-</form>
+        <div class="form-group">
+            <label>Studenti</label>
+            <small>Tenere premuto CTRL per selezione multipla</small>
+
+            <select name="studentiSelect" multiple>
+                <option th:each="studente : ${studente}"
+                        th:value="${studente.id}"
+                        th:text="${studente.cognome} + ' (' + ${studente.nome} + ')'">
+                </option>
+            </select>
+        </div>
+
+        <button type="submit">Invia</button>
+
+    </form>
+
 </div>
 
 </body>

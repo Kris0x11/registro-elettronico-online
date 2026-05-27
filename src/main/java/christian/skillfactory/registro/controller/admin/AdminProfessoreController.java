@@ -180,7 +180,6 @@ public class AdminProfessoreController {
     @GetMapping("/cerca")
     public String cerca(@RequestParam String keyword, Model model) {
 		// Setup search probe
-
         ProfessoreEntity probe = new ProfessoreEntity();
         probe.setNome(keyword);
         probe.setCognome(keyword);
