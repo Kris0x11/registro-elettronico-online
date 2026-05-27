@@ -1,4 +1,4 @@
-# Registro Elettronico Online
+# Online Electronic School Registry
 
 Web-based school management platform developed with Spring Boot for handling academic records, attendance, disciplinary actions, and administrative operations through a role-based access system.
 
