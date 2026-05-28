@@ -32,13 +32,12 @@ The project follows the MVC architectural pattern and focuses on backend-oriente
 - Role-based authentication and authorization with Spring Security
 - Secure password encryption
 - CRUD operations for school entities
-- Dynamic search functionality
 - Pagination support for optimized data loading
 - Relational database management with JPA/Hibernate
 - Many-to-Many and One-to-One relationship handling
 - Server-side rendering with Thymeleaf
 - Interactive frontend behavior using JavaScript
-- Transaction-safe operations using `@Transactional`
+
 
 ---
 
