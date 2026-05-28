@@ -25,6 +25,7 @@ The platform supports multiple user roles with dedicated functionalities:
 
 The project follows the MVC architectural pattern and focuses on backend-oriented enterprise development using Spring Boot technologies.
 
+```
 src/main/java/christian/skillfactory/registro/
 │
 ├── configuration/
@@ -40,7 +41,7 @@ src/main/java/christian/skillfactory/registro/
 ├── repository/
 ├── service/
 └── seed/
-
+```
 ---
 
 ## Features
