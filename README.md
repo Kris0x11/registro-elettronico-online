@@ -25,6 +25,22 @@ The platform supports multiple user roles with dedicated functionalities:
 
 The project follows the MVC architectural pattern and focuses on backend-oriented enterprise development using Spring Boot technologies.
 
+src/main/java/christian/skillfactory/registro/
+│
+├── configuration/
+├── controller/
+│   ├── admin/
+│   ├── professore/
+│   ├── presenza/
+│   ├── sanzione/
+│   ├── studente/
+│   └── voto/
+│
+├── model/
+├── repository/
+├── service/
+└── seed/
+
 ---
 
 ## Features
@@ -80,7 +96,7 @@ The application follows the MVC (Model-View-Controller) pattern:
 - **Service Layer**
   - Business logic
   - Credential generation
-  - Application workflows
+  
 
 - **Repository Layer**
   - Data persistence
