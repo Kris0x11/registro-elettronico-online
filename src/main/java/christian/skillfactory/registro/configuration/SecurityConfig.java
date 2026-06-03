@@ -1,17 +1,12 @@
 package christian.skillfactory.registro.configuration;
 
-import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
@@ -49,17 +44,17 @@ public class SecurityConfig {
 	            .anyRequest().authenticated()
 	    )
 	    .formLogin(form -> form
-	            .loginPage("/account/login")
-	            .loginProcessingUrl("/account/login")       // <- obbligatorio
+	            .loginPage("/auth/login")
+	            .loginProcessingUrl("/auth/login")       
 	            .successHandler(customAuthenticationSuccessHandler())
-	            .failureUrl("/account/login?error")        // <- mostra errore se password sbagliata
+	            .failureUrl("/auth/login?error")       
 	            .permitAll()
 	    )
 	    .logout(logout -> logout
-	    	    .logoutUrl("/account/logout")          // endpoint di logout
-	    	    .logoutSuccessUrl("/account/login")    // dove reindirizzare dopo logout
-	    	    .invalidateHttpSession(true)           // invalida la sessione
-	    	    .deleteCookies("JSESSIONID")           // cancella il cookie
+	    	    .logoutUrl("/auth/logout")          
+	    	    .logoutSuccessUrl("/auth/login")    
+	    	    .invalidateHttpSession(true)           
+	    	    .deleteCookies("JSESSIONID")           
 	    	    .permitAll()
 	    	);
 
@@ -79,8 +74,7 @@ public class SecurityConfig {
     AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
         return (request, response, authentication) -> {
             Account account = (Account) authentication.getPrincipal();
-            String ruolo = account.getRuolo().getNome(); // prende ROLE_ADMIN / ROLE_PROF / ROLE_STUDENTE
-
+            String ruolo = account.getRuolo().getNome(); 
             if ("ROLE_ADMIN".equals(ruolo)) {
                 response.sendRedirect("/admin/home");
             } else if ("ROLE_PROF".equals(ruolo)) {
@@ -88,7 +82,7 @@ public class SecurityConfig {
             } else if ("ROLE_STUDENTE".equals(ruolo)) {
                 response.sendRedirect("/userStudente");
             } else {
-                response.sendRedirect("/account/login?error");
+                response.sendRedirect("/auth/login?error");
             }
         };
     }
