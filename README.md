@@ -135,23 +135,6 @@ Special attention was dedicated to:
 - transactional consistency
 - referential integrity management
 
----
-Video
-
-Admin pov: 
-
-https://github.com/user-attachments/assets/96f5f55e-a43e-4808-9aa4-afc5d6d5df08
-
-Student pov:
-
-https://github.com/user-attachments/assets/1d02de2d-2080-4a42-8960-8fc415429a2e
-
-Prof pov:
-
-https://github.com/user-attachments/assets/4dfde7d7-80a3-4a06-a723-ebc4d9132204
-
-
----
 
 ## Future Improvements
 
