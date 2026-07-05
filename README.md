@@ -140,7 +140,6 @@ Special attention was dedicated to:
 
 - Remove the remaining inline CSS styles to fully centralize styling into dedicated external stylesheet files.
 - JWT authentication
-- Docker containerization
 - Notification system
 - Responsive UI improvements
 - Deisgn Improve
